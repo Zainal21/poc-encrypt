@@ -25,3 +25,10 @@ php artisan key:generate
 php artisan serve --port=8002
 ```
 Pastikan `poc-api` berjalan dan termigrasi.
+
+
+## Diagram alur
+- Symmetric: `../docs/symmetric-flow.png`
+- Asymmetric: `../docs/asymmetric-flow.png`
+
+Lihat juga [README utama](../README.md#diagram-alur).

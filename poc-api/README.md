@@ -42,3 +42,10 @@ Key **tidak digenerate dari client/UI**. Nilai preset sudah disiapkan dari awal 
 - API membuat record `registered_keys` otomatis saat pertama kali dipakai (`ensurePresetKey`).
 
 Ganti key preset dengan env/path sendiri bila perlu; jangan pakai key demo ini di produksi.
+
+
+## Diagram alur
+- Symmetric: `../docs/symmetric-flow.png`
+- Asymmetric: `../docs/asymmetric-flow.png`
+
+Lihat juga [README utama](../README.md#diagram-alur).

@@ -12,6 +12,18 @@ Simulasi **symmetric** dan **asymmetric encryption** untuk data personal. Client
 3. **Asymmetric**: client memakai keypair **preset** (public key terdaftar di API, `key_id=preset-demo`) → bungkus konten (AES data-key + data-key dienkripsi RSA public key) & kirim `key_id` terenkripsi → `POST /api/personal-data/asymmetric` → API dekripsi/validasi, simpan ke `personal_data_asymmetric`.
 4. Public key asimetris terdaftar disimpan di DB `registered_keys` dan file `poc-api/storage/app/keys/registered/` (demo mode: gitignore keys dilonggarkan).
 
+## Diagram alur
+
+### Symmetric
+Client mengenkripsi `content` dengan AES preset, lalu `key` (AES key) dengan RSA server. API mendekripsi, memvalidasi, dan menyimpan ke `personal_data_symmetric`.
+
+![Symmetric encryption flow](docs/symmetric-flow.png)
+
+### Asymmetric
+Client membungkus `content` dengan hybrid AES + public key terdaftar, lalu mengirim `key` (`key_id`) terenkripsi RSA server. API mendekripsi, memvalidasi, dan menyimpan ke `personal_data_asymmetric`.
+
+![Asymmetric encryption flow](docs/asymmetric-flow.png)
+
 ## Menjalankan
 ```bash
 # API
