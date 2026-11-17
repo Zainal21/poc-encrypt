@@ -13,6 +13,7 @@ class RegisteredKeyFactory extends Factory
     public function definition(): array
     {
         $keyId = Str::random(16);
+
         return [
             'key_id' => $keyId,
             'name' => fake()->word(),
