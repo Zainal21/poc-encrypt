@@ -1,81 +1,27 @@
-# Encryption Client (Laravel 11 + Blade)
+# poc-client — Encryption Simulation Client
 
-Frontend/Client demo for encryption POC. Calls **encryption-api** via HTTP facade.
+Laravel web client: **menyimpan key** di sisi client (session) dan mengirim payload sudah terenkripsi `{ "key", "content" }` ke `poc-api`.
 
-## Features
+## Halaman
+- `/symmetric` — generate & simpan AES key, enkripsi data personal + kirim payload terenkripsi ke API.
+- `/asymmetric` — generate keypair, daftarkan public key ke API (dapat `key_id`), enkripsi data + kirim payload terenkripsi.
+- `/data` — tampilkan data tersimpan (`personal_data_symmetric` / `personal_data_asymmetric`) via API.
 
-1. **Symmetric Encryption Demo** — Encrypt/decrypt text (AES-256 via API)
-2. **Asymmetric Encryption Demo** — Generate key pair (stored in API storage), encrypt/decrypt RSA 2048-bit without key input fields in form
-3. **Personal Data Demo** — Form to store sensitive data (name, NIK, phone), display list of decrypted data
+## Key preset (tidak digenerate lewat UI)
+Key sudah diset dari awal project, UI hanya submit data:
+- `POC_AES_KEY` (default di `config/crypto.php`) untuk symmetric.
+- `storage/app/keys/preset-public.pem` + `key_id=preset-demo` untuk asymmetric.
+- `storage/app/keys/preset-private.pem` disimpan untuk demo (tidak dipakai enkripsi client).
 
-## Prerequisites
+## Payload
+- **Symmetric**: `key` = AES key (base64 32B) dienkripsi RSA dengan server public key; `content` = JSON data dienkripsi AES-256-CBC (iv+cipher) dengan key tsb.
+- **Asymmetric**: `key` = `key_id` terdaftar dienkripsi RSA server (transport); `content` = envelope JSON `{key, content}` (data-key AES dibungkus RSA public key terdaftar, data dienkripsi AES) — simulasi hybrid.
 
-- PHP 8.3+
-- Composer
-- `encryption-api` running at `http://127.0.0.1:8001`
-
-## Getting Started
-
+## Setup
 ```bash
-cd encryption-client
-
-# Install dependencies
-composer install
-
-# Setup env
 cp .env.example .env
 php artisan key:generate
-
-# Start server (port 8002)
-php artisan serve --port=8002 --host=127.0.0.1
+# .env: ENCRYPTION_API_URL=http://127.0.0.1:8001
+php artisan serve --port=8002
 ```
-
-Open: `http://127.0.0.1:8002`
-
-## API URL Configuration
-
-Edit `.env`:
-
-```env
-ENCRYPTION_API_URL=http://127.0.0.1:8001
-```
-
-Config also available in `config/services.php`:
-
-```php
-'encryption_api' => [
-    'url' => env('ENCRYPTION_API_URL', 'http://127.0.0.1:8001'),
-],
-```
-
-## Page Structure
-
-| Route | Page |
-|-------|------|
-| `/symmetric` | Symmetric encrypt/decrypt demo |
-| `/asymmetric` | Generate keys, asymmetric encrypt/decrypt demo (no key fields) |
-| `/personal-data` | Form & list of encrypted personal data |
-
-## Project Structure
-
-```
-encryption-client/
-├── app/Http/Controllers/
-│   └── DemoController.php
-├── resources/views/
-│   ├── layout.blade.php
-│   └── demos/
-│       ├── symmetric.blade.php
-│       ├── asymmetric.blade.php
-│       └── personal.blade.php
-├── routes/web.php
-├── storage/app/keys/      # client's own key pair (separate demo)
-└── .env
-```
-
-## Notes
-
-- Client does **not** perform local encryption; all crypto operations go through the API.
-- API key pair stored in `encryption-api/storage/app/keys/`.
-- Client also has its own `storage/app/keys/` folder (separate) per POC specification.
-- UI uses Bootstrap 5 CDN, with loading state on submit.
+Pastikan `poc-api` berjalan dan termigrasi.

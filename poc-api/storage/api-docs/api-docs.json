@@ -1,233 +1,59 @@
 {
     "openapi": "3.0.0",
     "info": {
-        "title": "Encryption API",
-        "description": "POC Symmetric (AES-256) & Asymmetric (RSA 2048) encryption with personal data storage",
+        "title": "Encryption POC API",
+        "description": "Simulasi symmetric & asymmetric encryption. Client menyimpan key dan mengirim payload terenkripsi (key, content).",
         "version": "1.0.0"
     },
     "servers": [
         {
             "url": "http://127.0.0.1:8001",
-            "description": "Local dev"
+            "description": "Local"
         }
     ],
     "paths": {
-        "/api/asymmetric/generate-keys": {
-            "post": {
-                "summary": "Generate RSA 2048 key pair and save to storage/app/keys/",
-                "operationId": "fb86f1d1b4e8073bf02ad632dabae8c8",
-                "responses": {
-                    "200": {
-                        "description": "Keys generated and saved",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "success": {
-                                            "type": "boolean",
-                                            "example": true
-                                        },
-                                        "message": {
-                                            "type": "string",
-                                            "example": "Key pair generated and saved to storage/app/keys"
-                                        },
-                                        "data": {
-                                            "properties": {
-                                                "generated": {
-                                                    "type": "boolean",
-                                                    "example": true
-                                                }
-                                            },
-                                            "type": "object"
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            }
-                        }
-                    },
-                    "500": {
-                        "description": "Key generation failed"
-                    }
-                }
-            }
-        },
-        "/api/asymmetric/encrypt": {
-            "post": {
-                "summary": "Encrypt using public key from storage/app/keys/public.pem",
-                "operationId": "1a91dafeaef82a85fdb2534dd846c00d",
-                "requestBody": {
-                    "required": true,
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "required": [
-                                    "text"
-                                ],
-                                "properties": {
-                                    "text": {
-                                        "type": "string",
-                                        "example": "secret message"
-                                    }
-                                },
-                                "type": "object"
-                            }
-                        }
-                    }
-                },
-                "responses": {
-                    "200": {
-                        "description": "Encrypted successfully",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "success": {
-                                            "type": "boolean",
-                                            "example": true
-                                        },
-                                        "message": {
-                                            "type": "string",
-                                            "example": "Encrypted with public key from storage"
-                                        },
-                                        "data": {
-                                            "properties": {
-                                                "ciphertext": {
-                                                    "type": "string",
-                                                    "example": "base64encoded..."
-                                                }
-                                            },
-                                            "type": "object"
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            }
-                        }
-                    },
-                    "422": {
-                        "description": "Keys not generated or encryption failed"
-                    }
-                }
-            }
-        },
-        "/api/asymmetric/decrypt": {
-            "post": {
-                "summary": "Decrypt using private key from storage/app/keys/private.pem",
-                "operationId": "acfaf8364cc63f111d4b68efecf0054a",
-                "requestBody": {
-                    "required": true,
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "required": [
-                                    "ciphertext"
-                                ],
-                                "properties": {
-                                    "ciphertext": {
-                                        "type": "string",
-                                        "example": "base64encoded..."
-                                    }
-                                },
-                                "type": "object"
-                            }
-                        }
-                    }
-                },
-                "responses": {
-                    "200": {
-                        "description": "Decrypted successfully",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "success": {
-                                            "type": "boolean",
-                                            "example": true
-                                        },
-                                        "message": {
-                                            "type": "string",
-                                            "example": "Decrypted with private key from storage"
-                                        },
-                                        "data": {
-                                            "properties": {
-                                                "plaintext": {
-                                                    "type": "string",
-                                                    "example": "secret message"
-                                                }
-                                            },
-                                            "type": "object"
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            }
-                        }
-                    },
-                    "422": {
-                        "description": "Keys not generated or decryption failed"
-                    }
-                }
-            }
-        },
-        "/api/personal-data": {
+        "/api/crypto/server-public-key": {
             "get": {
-                "summary": "List all personal data (decrypted)",
-                "operationId": "952c4f09e5ad5f31f7d76a865de44a27",
+                "tags": [
+                    "Crypto"
+                ],
+                "summary": "Ambil public key server (untuk enkripsi transport key/content dari client)",
+                "operationId": "448e753a4ae2fbdbbdaf06a1df5b8114",
                 "responses": {
                     "200": {
-                        "description": "List of personal data",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "success": {
-                                            "type": "boolean",
-                                            "example": true
-                                        },
-                                        "message": {
-                                            "type": "string",
-                                            "example": "OK"
-                                        },
-                                        "data": {
-                                            "type": "array",
-                                            "items": {
-                                                "type": "object"
-                                            }
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            }
-                        }
+                        "description": "OK"
                     }
                 }
-            },
+            }
+        },
+        "/api/crypto/keys/register": {
             "post": {
-                "summary": "Encrypt and store personal data (full_name, nik, phone_number)",
-                "operationId": "ffb3969857788e6f4ddf21f9d89b7a56",
+                "tags": [
+                    "Crypto"
+                ],
+                "summary": "Daftarkan public key (asymmetric) milik client ke API",
+                "operationId": "635cb9caf20adfad5a13ff428a940215",
                 "requestBody": {
                     "required": true,
                     "content": {
                         "application/json": {
                             "schema": {
                                 "required": [
-                                    "full_name",
-                                    "nik",
-                                    "phone_number"
+                                    "name",
+                                    "public_key"
                                 ],
                                 "properties": {
-                                    "full_name": {
-                                        "type": "string",
-                                        "example": "Budi Santoso"
+                                    "name": {
+                                        "type": "string"
                                     },
-                                    "nik": {
-                                        "type": "string",
-                                        "example": "3273010101010001"
+                                    "public_key": {
+                                        "description": "PEM public key",
+                                        "type": "string"
                                     },
-                                    "phone_number": {
+                                    "private_key": {
+                                        "description": "Opsional (demo simulasi decrypt di API)",
                                         "type": "string",
-                                        "example": "08123456789"
+                                        "nullable": true
                                     }
                                 },
                                 "type": "object"
@@ -237,74 +63,47 @@
                 },
                 "responses": {
                     "201": {
-                        "description": "Stored successfully",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "success": {
-                                            "type": "boolean",
-                                            "example": true
-                                        },
-                                        "message": {
-                                            "type": "string"
-                                        },
-                                        "data": {
-                                            "type": "object"
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            }
-                        }
-                    },
-                    "422": {
-                        "description": "Validation error"
+                        "description": "Registered"
                     }
                 }
             }
         },
-        "/api/personal-data/{id}": {
+        "/api/personal-data/symmetric": {
             "get": {
-                "summary": "Get personal data detail by ID (decrypted)",
-                "operationId": "8c72c8f5b2a9328d16f161b33691a2b8",
-                "parameters": [
-                    {
-                        "name": "id",
-                        "in": "path",
-                        "description": "Record ID",
-                        "required": true,
-                        "schema": {
-                            "type": "integer"
-                        }
-                    }
+                "tags": [
+                    "PersonalData"
                 ],
+                "summary": "List personal data symmetric (ciphertext)",
+                "operationId": "dcd3cccaaf7ce38a442bfdd072662f4f",
                 "responses": {
                     "200": {
-                        "description": "Data found"
-                    },
-                    "404": {
-                        "description": "Not found"
+                        "description": "OK"
                     }
                 }
-            }
-        },
-        "/api/symmetric/encrypt": {
+            },
             "post": {
-                "summary": "Encrypt plaintext using AES-256-CBC",
-                "operationId": "74d32d163a21a407ce5e47d2f2fb7133",
+                "tags": [
+                    "PersonalData"
+                ],
+                "summary": "Simpan personal data (symmetric). Payload terenkripsi: key & content.",
+                "operationId": "e2cfc4557894e1b1f71d38a2d4b03ebb",
                 "requestBody": {
                     "required": true,
                     "content": {
                         "application/json": {
                             "schema": {
                                 "required": [
-                                    "text"
+                                    "key",
+                                    "content"
                                 ],
                                 "properties": {
-                                    "text": {
-                                        "type": "string",
-                                        "example": "sensitive data"
+                                    "key": {
+                                        "description": "AES key (base64 32B) terenkripsi RSA dengan server public key",
+                                        "type": "string"
+                                    },
+                                    "content": {
+                                        "description": "JSON personal data terenkripsi AES-256-CBC dengan key tersebut (base64 iv+cipher)",
+                                        "type": "string"
                                     }
                                 },
                                 "type": "object"
@@ -313,57 +112,48 @@
                     }
                 },
                 "responses": {
-                    "200": {
-                        "description": "Encrypted successfully",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "success": {
-                                            "type": "boolean",
-                                            "example": true
-                                        },
-                                        "message": {
-                                            "type": "string",
-                                            "example": "Encrypted"
-                                        },
-                                        "data": {
-                                            "properties": {
-                                                "ciphertext": {
-                                                    "type": "string",
-                                                    "example": "eyJpdiI6I..."
-                                                }
-                                            },
-                                            "type": "object"
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            }
-                        }
-                    },
-                    "500": {
-                        "description": "Encryption failed"
+                    "201": {
+                        "description": "Stored"
                     }
                 }
             }
         },
-        "/api/symmetric/decrypt": {
+        "/api/personal-data/asymmetric": {
+            "get": {
+                "tags": [
+                    "PersonalData"
+                ],
+                "summary": "List personal data asymmetric (decrypted untuk demo, butuh private key tersimpan)",
+                "operationId": "5802a2899d3b481c6d51970f612dd056",
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    }
+                }
+            },
             "post": {
-                "summary": "Decrypt ciphertext using AES-256-CBC",
-                "operationId": "2de5d51537f9c7b013d58862567e6131",
+                "tags": [
+                    "PersonalData"
+                ],
+                "summary": "Simpan personal data (asymmetric hybrid). Payload terenkripsi: key & content.",
+                "operationId": "9f2927486c51ecdacc21be84dc5c64ec",
                 "requestBody": {
                     "required": true,
                     "content": {
                         "application/json": {
                             "schema": {
                                 "required": [
-                                    "ciphertext"
+                                    "key",
+                                    "content"
                                 ],
                                 "properties": {
-                                    "ciphertext": {
-                                        "type": "string",
-                                        "example": "eyJpdiI6I..."
+                                    "key": {
+                                        "description": "key_id terdaftar terenkripsi RSA dengan server public key (transport)",
+                                        "type": "string"
+                                    },
+                                    "content": {
+                                        "description": "JSON {key, content}: AES key dienkripsi RSA public key client, data dienkripsi AES key tsb",
+                                        "type": "string"
                                     }
                                 },
                                 "type": "object"
@@ -372,40 +162,21 @@
                     }
                 },
                 "responses": {
-                    "200": {
-                        "description": "Decrypted successfully",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "properties": {
-                                        "success": {
-                                            "type": "boolean",
-                                            "example": true
-                                        },
-                                        "message": {
-                                            "type": "string",
-                                            "example": "Decrypted"
-                                        },
-                                        "data": {
-                                            "properties": {
-                                                "plaintext": {
-                                                    "type": "string",
-                                                    "example": "sensitive data"
-                                                }
-                                            },
-                                            "type": "object"
-                                        }
-                                    },
-                                    "type": "object"
-                                }
-                            }
-                        }
-                    },
-                    "422": {
-                        "description": "Invalid ciphertext or decryption failed"
+                    "201": {
+                        "description": "Stored"
                     }
                 }
             }
         }
-    }
+    },
+    "tags": [
+        {
+            "name": "Crypto",
+            "description": "Crypto"
+        },
+        {
+            "name": "PersonalData",
+            "description": "PersonalData"
+        }
+    ]
 }

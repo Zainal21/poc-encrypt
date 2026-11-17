@@ -37,4 +37,16 @@ return [
     'private_path' => storage_path('app/keys/private'),
     'public_path' => storage_path('app/keys/public'),
 
+    /*
+    |--------------------------------------------------------------------------
+    | Preset demo key (tidak digenerate dari client)
+    |--------------------------------------------------------------------------
+    */
+    'preset' => [
+        'key_id' => env('POC_PRESET_KEY_ID', 'preset-demo'),
+        'name' => env('POC_PRESET_KEY_NAME', 'Preset Demo Key'),
+        'public_path' => env('POC_PRESET_PUBLIC_PATH', 'keys/registered/public/preset-demo.pem'),
+        'private_path' => env('POC_PRESET_PRIVATE_PATH', 'keys/registered/private/preset-demo.pem'),
+    ],
+
 ];
